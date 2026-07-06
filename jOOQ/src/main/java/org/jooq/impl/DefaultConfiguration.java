@@ -314,6 +314,10 @@ public class DefaultConfiguration extends AbstractConfiguration {
         Settings settings,
         Map<Object, Object> data)
     {
+        this.data = data != null
+            ? new ConcurrentHashMap<>(data)
+            : new ConcurrentHashMap<>();
+
         set(connectionProvider);
         setInterpreterConnectionProvider(interpreterConnectionProvider);
         setSystemConnectionProvider(systemConnectionProvider);
@@ -347,10 +351,6 @@ public class DefaultConfiguration extends AbstractConfiguration {
         set(clock);
         set(dialect);
         set(settings);
-
-        this.data = data != null
-            ? new ConcurrentHashMap<>(data)
-            : new ConcurrentHashMap<>();
     }
 
     // -------------------------------------------------------------------------

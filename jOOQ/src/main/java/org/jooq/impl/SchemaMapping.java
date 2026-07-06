@@ -95,10 +95,8 @@ import org.jetbrains.annotations.Nullable;
  */
 final class SchemaMapping implements Serializable {
 
-    private static final JooqLogger   log               = JooqLogger.getLogger(SchemaMapping.class);
-    private static volatile boolean   loggedDeprecation = false;
-    private static final Object       NULL              = new Object();
-    static final String               DATA_KEY          = "org.jooq.impl.schema-mapping";
+    private static final Object       NULL     = new Object();
+    static final String               DATA_KEY = "org.jooq.impl.schema-mapping";
 
     private final Configuration       configuration;
     private final Map<String, Object> catalogs;
@@ -153,8 +151,6 @@ final class SchemaMapping implements Serializable {
      * @param schemaName the default schema
      */
     final void use(String schemaName) {
-        logDeprecation();
-
         mapping().setDefaultSchema(schemaName);
     }
 
@@ -165,7 +161,6 @@ final class SchemaMapping implements Serializable {
      * @param outputSchema The schema configured at run time to be mapped
      */
     final void add(String inputSchema, String outputSchema) {
-        logDeprecation();
 
         // Find existing mapped schema
         MappedSchema schema = null;
@@ -232,7 +227,6 @@ final class SchemaMapping implements Serializable {
      * @param outputTable The table configured at run time to be mapped
      */
     final void add(final Table<?> inputTable, final String outputTable) {
-        logDeprecation();
 
         // Try to find a pre-existing schema mapping in the settings
         MappedSchema schema = null;
