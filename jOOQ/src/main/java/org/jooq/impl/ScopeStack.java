@@ -239,6 +239,21 @@ final class ScopeStack<K, V> implements Iterable<V> {
             return element.value;
     }
 
+    private final V getHigherScope0(List<Element<V>> list) {
+        int i;
+
+        if (list == null)
+            return null;
+        else if ((i = list.size()) == 0)
+            return null;
+        else if (scopeLevel < 1)
+            return null;
+        else if (scopeLevel >= i)
+            return getIfNotHidden(list.get(i - 1));
+        else
+            return getIfNotHidden(list.get(i - 2));
+    }
+
     private final V getCurrentScope0(List<Element<V>> list) {
         int i;
 
@@ -272,6 +287,10 @@ final class ScopeStack<K, V> implements Iterable<V> {
 
     final V get(K key) {
         return get0(listOrNull(key));
+    }
+
+    final V getHigherScope(K key) {
+        return getHigherScope0(listOrNull(key));
     }
 
     final V getCurrentScope(K key) {

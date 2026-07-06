@@ -470,6 +470,11 @@ public interface Context<C extends Context<C>> extends ExecuteScope {
     boolean inScope(QueryPart part);
 
     /**
+     * Check whether a query part is registered in a higher scope.
+     */
+    boolean inHigherScope(QueryPart part);
+
+    /**
      * Check whether a query part is registered in the current scope.
      */
     boolean inCurrentScope(QueryPart part);
