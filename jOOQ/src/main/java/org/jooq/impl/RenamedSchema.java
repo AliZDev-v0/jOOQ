@@ -35,23 +35,43 @@
  *
  *
  */
-package org.jooq;
+package org.jooq.impl;
 
-import static org.jooq.impl.DSL.name;
+import java.util.List;
 
-import org.jooq.impl.TableImpl;
+import org.jooq.Catalog;
+import org.jooq.Schema;
+import org.jooq.Sequence;
+import org.jooq.Table;
+import org.jooq.UDT;
 
 /**
- * A mapped table
+ * A mapped schema
  *
  * @author Lukas Eder
  */
-final class RenamedTable<R extends Record> extends TableImpl<R> implements RenamedSchemaElement {
+final class RenamedSchema extends SchemaImpl {
 
-    RenamedTable(Schema schema, Table<R> delegate, String rename) {
-        super(name(rename), schema);
+    private final Schema delegate;
 
-        for (Field<?> field : delegate.fields())
-            createField(field.getUnqualifiedName(), field.getDataType(), this);
+    RenamedSchema(Catalog catalog, Schema delegate, String rename) {
+        super(rename, catalog);
+
+        this.delegate = delegate;
+    }
+
+    @Override
+    public final List<Table<?>> getTables() {
+        return delegate.getTables();
+    }
+
+    @Override
+    public final List<UDT<?>> getUDTs() {
+        return delegate.getUDTs();
+    }
+
+    @Override
+    public final List<Sequence<?>> getSequences() {
+        return delegate.getSequences();
     }
 }

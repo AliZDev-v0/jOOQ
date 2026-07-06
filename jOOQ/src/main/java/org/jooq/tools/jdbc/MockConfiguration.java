@@ -275,11 +275,6 @@ public class MockConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public org.jooq.SchemaMapping schemaMapping() {
-        return delegate.schemaMapping();
-    }
-
-    @Override
     public SQLDialect dialect() {
         return delegate.dialect();
     }

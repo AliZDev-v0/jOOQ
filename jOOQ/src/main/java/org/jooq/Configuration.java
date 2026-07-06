@@ -601,15 +601,6 @@ public interface Configuration extends Serializable {
 
 
     /**
-     * Retrieve the configured schema mapping.
-     *
-     * @deprecated - 2.0.5 - Use {@link #settings()} instead
-     */
-    @NotNull
-    @Deprecated(forRemoval = true, since = "2.0")
-    SchemaMapping schemaMapping();
-
-    /**
      * Retrieve the configured dialect.
      */
     @NotNull

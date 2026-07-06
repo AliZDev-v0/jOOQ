@@ -35,7 +35,7 @@
  *
  *
  */
-package org.jooq;
+package org.jooq.impl;
 
 /**
  * A marker interface for renamed schema elements.

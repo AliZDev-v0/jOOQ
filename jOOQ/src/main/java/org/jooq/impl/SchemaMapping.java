@@ -35,7 +35,7 @@
  *
  *
  */
-package org.jooq;
+package org.jooq.impl;
 
 import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.schema;
@@ -50,14 +50,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jooq.Catalog;
+import org.jooq.Configuration;
+import org.jooq.Function3;
+import org.jooq.Qualified;
+import org.jooq.Record;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.UDT;
+import org.jooq.UDTRecord;
 import org.jooq.conf.MappedCatalog;
 import org.jooq.conf.MappedSchema;
 import org.jooq.conf.MappedSchemaObject;
 import org.jooq.conf.MappedTable;
 import org.jooq.conf.RenderMapping;
-import org.jooq.conf.Settings;
 import org.jooq.conf.SettingsTools;
-import org.jooq.impl.DSL;
 import org.jooq.tools.JooqLogger;
 import org.jooq.tools.StringUtils;
 
@@ -85,17 +92,13 @@ import org.jetbrains.annotations.Nullable;
  * compile-time.
  *
  * @author Lukas Eder
- * @see <a
- *      href="https://sourceforge.net/apps/trac/jooq/wiki/Manual/ADVANCED/SchemaMapping">https://sourceforge.net/apps/trac/jooq/wiki/Manual/ADVANCED/SchemaMapping</a>
- * @since 1.5.2, 1.6.0
- * @deprecated - 2.0.5 - Use runtime configuration {@link Settings} instead
  */
-@Deprecated(forRemoval = true, since = "2.0")
-public class SchemaMapping implements Serializable {
+final class SchemaMapping implements Serializable {
 
     private static final JooqLogger   log               = JooqLogger.getLogger(SchemaMapping.class);
     private static volatile boolean   loggedDeprecation = false;
     private static final Object       NULL              = new Object();
+    static final String               DATA_KEY          = "org.jooq.impl.schema-mapping";
 
     private final Configuration       configuration;
     private final Map<String, Object> catalogs;
@@ -106,7 +109,7 @@ public class SchemaMapping implements Serializable {
     /**
      * Construct a mapping from a {@link Configuration} object
      */
-    public SchemaMapping(Configuration configuration) {
+    SchemaMapping(Configuration configuration) {
         this.configuration = configuration;
 
         this.catalogs = new ConcurrentHashMap<>();
@@ -127,15 +130,6 @@ public class SchemaMapping implements Serializable {
         return Boolean.TRUE.equals(configuration.settings().isRenderSchema());
     }
 
-    private static void logDeprecation() {
-        if (!loggedDeprecation) {
-
-            // Log only once
-            loggedDeprecation = true;
-            log.warn("DEPRECATION", "org.jooq.SchemaMapping is deprecated as of jOOQ 2.0.5. Consider using jOOQ's runtime configuration org.jooq.conf.Settings instead");
-        }
-    }
-
     /**
      * Set a schema as the default schema. This results in the supplied schema
      * being omitted in generated SQL.
@@ -145,7 +139,7 @@ public class SchemaMapping implements Serializable {
      *
      * @param schema the default schema
      */
-    public void use(Schema schema) {
+    final void use(Schema schema) {
         use(schema.getName());
     }
 
@@ -158,7 +152,7 @@ public class SchemaMapping implements Serializable {
      *
      * @param schemaName the default schema
      */
-    public void use(String schemaName) {
+    final void use(String schemaName) {
         logDeprecation();
 
         mapping().setDefaultSchema(schemaName);
@@ -170,7 +164,7 @@ public class SchemaMapping implements Serializable {
      * @param inputSchema The schema known at codegen time to be mapped
      * @param outputSchema The schema configured at run time to be mapped
      */
-    public void add(String inputSchema, String outputSchema) {
+    final void add(String inputSchema, String outputSchema) {
         logDeprecation();
 
         // Find existing mapped schema
@@ -197,7 +191,7 @@ public class SchemaMapping implements Serializable {
      * @param inputSchema The schema known at codegen time to be mapped
      * @param outputSchema The schema configured at run time to be mapped
      */
-    public void add(String inputSchema, Schema outputSchema) {
+    final void add(String inputSchema, Schema outputSchema) {
         add(inputSchema, outputSchema.getName());
     }
 
@@ -207,7 +201,7 @@ public class SchemaMapping implements Serializable {
      * @param inputSchema The schema known at codegen time to be mapped
      * @param outputSchema The schema configured at run time to be mapped
      */
-    public void add(Schema inputSchema, Schema outputSchema) {
+    final void add(Schema inputSchema, Schema outputSchema) {
         add(inputSchema.getName(), outputSchema.getName());
     }
 
@@ -217,7 +211,7 @@ public class SchemaMapping implements Serializable {
      * @param inputSchema The schema known at codegen time to be mapped
      * @param outputSchema The schema configured at run time to be mapped
      */
-    public void add(Schema inputSchema, String outputSchema) {
+    final void add(Schema inputSchema, String outputSchema) {
         add(inputSchema.getName(), outputSchema);
     }
 
@@ -227,7 +221,7 @@ public class SchemaMapping implements Serializable {
      * @param inputTable The table known at codegen time to be mapped
      * @param outputTable The table configured at run time to be mapped
      */
-    public void add(Table<?> inputTable, Table<?> outputTable) {
+    final void add(Table<?> inputTable, Table<?> outputTable) {
         add(inputTable, outputTable.getName());
     }
 
@@ -237,7 +231,7 @@ public class SchemaMapping implements Serializable {
      * @param inputTable The table known at codegen time to be mapped
      * @param outputTable The table configured at run time to be mapped
      */
-    public void add(final Table<?> inputTable, final String outputTable) {
+    final void add(final Table<?> inputTable, final String outputTable) {
         logDeprecation();
 
         // Try to find a pre-existing schema mapping in the settings
@@ -276,7 +270,7 @@ public class SchemaMapping implements Serializable {
     }
 
     @Nullable
-    public Catalog map(Catalog catalog) {
+    final Catalog map(Catalog catalog) {
 
         // [#1774] [#4795] The default Settings render schema flag takes
         // precedence over the DefaultConfiguration's ignoreMapping flag!
@@ -349,7 +343,7 @@ public class SchemaMapping implements Serializable {
      * @return The configured schema
      */
     @Nullable
-    public Schema map(Schema schema) {
+    final Schema map(Schema schema) {
 
         // [#1774] The default Settings render schema flag takes precedence over
         // The DefaultConfiguration's ignoreMapping flag!
@@ -467,7 +461,7 @@ public class SchemaMapping implements Serializable {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Nullable
-    public <R extends Record> Table<R> map(Table<R> table) {
+    final <R extends Record> Table<R> map(Table<R> table) {
         return map0(table, () -> (Map) tables, s -> s.getTables(), RenamedTable::new);
     }
 
@@ -479,12 +473,12 @@ public class SchemaMapping implements Serializable {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Nullable
-    public <R extends UDTRecord<R>> UDT<R> map(UDT<R> udt) {
+    final <R extends UDTRecord<R>> UDT<R> map(UDT<R> udt) {
         return map0(udt, () -> (Map) udts, s -> s.getUdts(), RenamedUDT::new);
     }
 
     @SuppressWarnings("unchecked")
-    private <Q extends Qualified> Q map0(
+    private final <Q extends Qualified> Q map0(
         Q part,
         Supplier<Map<String, Object>> map,
         Function<MappedSchema, ? extends List<? extends MappedSchemaObject>> schemaObjects,
@@ -607,14 +601,14 @@ public class SchemaMapping implements Serializable {
      * Synonym for {@link #use(String)}. Added for better interoperability with
      * Spring
      */
-    public void setDefaultSchema(String schema) {
+    final void setDefaultSchema(String schema) {
         use(schema);
     }
 
     /**
      * Initialise SchemaMapping. Added for better interoperability with Spring
      */
-    public void setSchemaMapping(Map<String, String> schemaMap) {
+    final void setSchemaMapping(Map<String, String> schemaMap) {
         schemaMap.forEach(this::add);
     }
 

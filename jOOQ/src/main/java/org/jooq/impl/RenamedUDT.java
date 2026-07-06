@@ -35,39 +35,24 @@
  *
  *
  */
-package org.jooq;
+package org.jooq.impl;
 
-import java.util.List;
-
-import org.jooq.impl.SchemaImpl;
+import org.jooq.Field;
+import org.jooq.Schema;
+import org.jooq.UDT;
+import org.jooq.UDTRecord;
 
 /**
- * A mapped schema
+ * A mapped table
  *
  * @author Lukas Eder
  */
-final class RenamedSchema extends SchemaImpl {
+final class RenamedUDT<R extends UDTRecord<R>> extends UDTImpl<R> implements RenamedSchemaElement {
 
-    private final Schema delegate;
+    RenamedUDT(Schema schema, UDT<R> delegate, String rename) {
+        super(rename, schema, delegate.getPackage(), delegate.isSynthetic());
 
-    RenamedSchema(Catalog catalog, Schema delegate, String rename) {
-        super(rename, catalog);
-
-        this.delegate = delegate;
-    }
-
-    @Override
-    public final List<Table<?>> getTables() {
-        return delegate.getTables();
-    }
-
-    @Override
-    public final List<UDT<?>> getUDTs() {
-        return delegate.getUDTs();
-    }
-
-    @Override
-    public final List<Sequence<?>> getSequences() {
-        return delegate.getSequences();
+        for (Field<?> field : delegate.fields())
+            createField(field.getUnqualifiedName(), field.getDataType(), this);
     }
 }

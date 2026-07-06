@@ -35,11 +35,12 @@
  *
  *
  */
-package org.jooq;
+package org.jooq.impl;
 
 import java.util.List;
 
-import org.jooq.impl.CatalogImpl;
+import org.jooq.Catalog;
+import org.jooq.Schema;
 
 /**
  * A mapped catalog

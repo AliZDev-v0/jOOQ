@@ -1697,6 +1697,20 @@ final class Tools {
     }
 
     /**
+     * Lazy initialise a {@link Configuration}'s schema mapping.
+     */
+    static final SchemaMapping schemaMapping(Scope scope) {
+        return schemaMapping(scope.configuration());
+    }
+
+    /**
+     * Lazy initialise a {@link Configuration}'s schema mapping.
+     */
+    static final SchemaMapping schemaMapping(Configuration configuration) {
+        return (SchemaMapping) configuration.data().computeIfAbsent(SchemaMapping.DATA_KEY, k -> new SchemaMapping(configuration));
+    }
+
+    /**
      * Allows <code>null</code> arguments, unlike
      * {@link ContextConverter#scoped(Converter)}.
      */
@@ -3827,54 +3841,54 @@ final class Tools {
     }
 
     /**
-     * Map a {@link Catalog} according to the configured {@link org.jooq.SchemaMapping}
+     * Map a {@link Catalog} according to the configured schema mapping
      */
     static final Catalog getMappedCatalog(Scope scope, Catalog catalog) {
         if (scope != null)
-            return scope.configuration().schemaMapping().map(catalog);
+            return schemaMapping(scope).map(catalog);
 
         return catalog;
     }
 
     /**
-     * Map a {@link Schema} according to the configured {@link org.jooq.SchemaMapping}
+     * Map a {@link Schema} according to the configured schema mapping
      */
     static final Schema getMappedSchema(Scope scope, Schema schema) {
         if (scope != null)
-            return scope.configuration().schemaMapping().map(schema);
+            return schemaMapping(scope).map(schema);
 
         return schema;
     }
 
     /**
-     * Map a {@link Table} according to the configured {@link org.jooq.SchemaMapping}
+     * Map a {@link Table} according to the configured schema mapping
      */
     static final <R extends Record> Table<R> getMappedTable(Scope scope, Table<R> table) {
         if (scope != null)
-            return scope.configuration().schemaMapping().map(table);
+            return schemaMapping(scope).map(table);
 
         return table;
     }
 
     /**
-     * Map a {@link UDT} according to the configured {@link org.jooq.SchemaMapping}
+     * Map a {@link UDT} according to the configured schema mapping
      */
     static final <R extends UDTRecord<R>> UDT<R> getMappedUDT(Scope scope, UDT<R> udt) {
         if (scope != null)
-            return scope.configuration().schemaMapping().map(udt);
+            return schemaMapping(scope).map(udt);
 
         return udt;
     }
 
     /**
-     * Map a {@link UDT} according to the configured {@link org.jooq.SchemaMapping}
+     * Map a {@link UDT} according to the configured schema mapping
      */
     static final RecordQualifier<?> getMappedQualifier(Scope scope, RecordQualifier<?> qualifier) {
         if (scope != null) {
             if (qualifier instanceof UDT<?> u)
-                return scope.configuration().schemaMapping().map(u);
+                return schemaMapping(scope).map(u);
             else if (qualifier instanceof Table<?> t)
-                return scope.configuration().schemaMapping().map(t);
+                return schemaMapping(scope).map(t);
         }
 
         return qualifier;
@@ -3882,7 +3896,7 @@ final class Tools {
 
     /**
      * Map an {@link QualifiedRecord} according to the configured
-     * {@link org.jooq.SchemaMapping}
+     * schema mapping
      */
     @SuppressWarnings("unchecked")
     static final String getMappedUDTName(Scope scope, Class<? extends QualifiedRecord<?>> type) {
@@ -3891,7 +3905,7 @@ final class Tools {
 
     /**
      * Map an {@link QualifiedRecord} according to the configured
-     * {@link org.jooq.SchemaMapping}
+     * schema mapping
      */
     static final String getMappedUDTName(Scope scope, QualifiedRecord<?> record) {
         RecordQualifier<?> udt = record.getQualifier();

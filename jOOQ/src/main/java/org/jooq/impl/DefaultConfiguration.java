@@ -159,9 +159,6 @@ public class DefaultConfiguration extends AbstractConfiguration {
     //         should not be serialized anyway).
     private transient ConcurrentHashMap<Object, Object> data;
 
-    // Derived objects
-    private org.jooq.SchemaMapping                      mapping;
-
     // -------------------------------------------------------------------------
     // XXX: Constructors
     // -------------------------------------------------------------------------
@@ -1837,7 +1834,7 @@ public class DefaultConfiguration extends AbstractConfiguration {
             ? SettingsTools.clone(newSettings)
             : SettingsTools.defaultSettings();
 
-        this.mapping = new org.jooq.SchemaMapping(this);
+        data(SchemaMapping.DATA_KEY, new SchemaMapping(this));
         return this;
     }
 
@@ -2365,15 +2362,6 @@ public class DefaultConfiguration extends AbstractConfiguration {
     @Override
     public final Object data(Object key, Object value) {
         return data.put(key, value);
-    }
-
-    @Override
-    @Deprecated
-    public final org.jooq.SchemaMapping schemaMapping() {
-        if (mapping == null)
-            mapping = new org.jooq.SchemaMapping(this);
-
-        return mapping;
     }
 
     @Override
